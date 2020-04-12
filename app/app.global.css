@@ -8,6 +8,9 @@ button {
   -webkit-app-region: drag;
 }
 
+button:focus {outline:0;}
+
+
 body {
   -webkit-app-region: drag;
   position: relative;

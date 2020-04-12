@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint global-require: off, no-console: off */
 
 /**
@@ -8,7 +9,6 @@
  * When running `yarn build` or `yarn build-main`, this file is compiled to
  * `./app/main.prod.js` using webpack. This gives us some performance wins.
  */
-import path from 'path';
 import { app, BrowserWindow, screen } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
@@ -60,29 +60,25 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     alwaysOnTop: true,
-    x: width - 50,
+    x: width - 500,
     y: 0,
-    width: 50,
-    height: 50,
+    width: 500,
+    height: 600,
     // maxWidth: 400,
     // maxHeight: 500,
     show: false,
     transparent: true,
     frame: false,
-    webPreferences:
-      process.env.NODE_ENV === 'development' || process.env.E2E_BUILD === 'true'
-        ? {
-            nodeIntegration: true
-          }
-        : {
-            preload: path.join(__dirname, 'dist/renderer.prod.js')
-          }
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
   mainWindow.setAlwaysOnTop(true, 'floating', 1);
   mainWindow.setVisibleOnAllWorkspaces(true);
-  mainWindow.setFullScreenable(false);
-  // app.dock.show();
+  // mainWindow.setFullScreenable(false);
+
+  mainWindow.setIgnoreMouseEvents(true, { forward: true });
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 

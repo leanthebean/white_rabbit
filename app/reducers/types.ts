@@ -1,11 +1,18 @@
 import { Dispatch as ReduxDispatch, Store as ReduxStore, Action } from 'redux';
 
-export type counterStateType = {
-  counter: number;
+export type rabbitStateType = {
+  rabbit: RabbitState;
 };
 
-export type GetState = () => counterStateType;
+export type RabbitState = {
+  isGoogleLoggedIn: boolean;
+  isError: boolean;
+  errorMessage: string;
+  auth: object;
+};
+
+export type GetState = () => rabbitStateType;
 
 export type Dispatch = ReduxDispatch<Action<string>>;
 
-export type Store = ReduxStore<counterStateType, Action<string>>;
+export type Store = ReduxStore<rabbitStateType, Action<string>>;
