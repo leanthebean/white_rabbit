@@ -2,7 +2,12 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import Home from '../components/Home';
 import { rabbitStateType } from '../reducers/types';
-import { signInGoogle } from '../actions/stateActions';
+import {
+  signInGoogle,
+  createWorkSheet,
+  createPersonalSheet,
+  setSettings
+} from '../actions/stateActions';
 
 function mapStateToProps(state: rabbitStateType) {
   return {
@@ -13,7 +18,10 @@ function mapStateToProps(state: rabbitStateType) {
 function mapDispatchToProps(dispatch: Dispatch) {
   return bindActionCreators(
     {
-      signInGoogle
+      signInGoogle,
+      createWorkSheet,
+      createPersonalSheet,
+      setSettings
     },
     dispatch
   );

@@ -68,13 +68,18 @@ const useStyles = makeStyles({
 });
 
 type Props = {
-  onClickSettings?: () => void;
-  onClickShipIt?: () => void;
+  onClickSettings: () => void;
+  onClickShipIt: () => void;
 };
 export default function MainView(props: Props) {
   const classes = useStyles(props);
-
   const { onClickSettings, onClickShipIt } = props;
+
+  const onClickSipItButton = () => {
+    // clear state
+    onClickShipIt();
+  };
+
   return (
     <div>
       <Paper elevation={4} className={classes.paper}>
@@ -92,7 +97,7 @@ export default function MainView(props: Props) {
             label="Personal"
           />
         </RadioGroup>
-        <SettingsOutlined className={classes.icon} />
+        <SettingsOutlined onClick={onClickSettings} className={classes.icon} />
         <br />
         <Typography className={classes.title}>What did you do?</Typography>
         <br />
@@ -122,7 +127,7 @@ export default function MainView(props: Props) {
 
         <Button
           color={GREEN}
-          // onClickAction={onClickAction}
+          onClickAction={onClickSipItButton}
           text="Ship it!"
           isVisible
         />

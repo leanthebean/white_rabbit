@@ -2,50 +2,26 @@ import ElectronGoogleOAuth2 from '@getstation/electron-google-oauth2';
 
 import { GetState, Dispatch } from '../reducers/types';
 
-const http = require('http');
-const opn = require('open');
-const destroyer = require('server-destroy');
-
-const { google } = require('googleapis');
-
-export const INCREMENT_COUNTER = 'INCREMENT_COUNTER';
-export const DECREMENT_COUNTER = 'DECREMENT_COUNTER';
 export const GET_AUTH = 'GET_AUTH';
 export const RECEIVE_ERROR = 'RECEIVE_ERROR';
+export const RECEIVE_PERSONAL_SHEET = 'RECEIVE_PERSONAL_SHEET';
+export const RECEIVE_WORK_SHEET = 'RECEIVE_WORK_SHEET';
 
-const keys = { redirect_uris: [''] };
+const scopes = ['https://www.googleapis.com/auth/spreadsheets'];
 
-const oauth2Client = new google.auth.OAuth2(
-  process.env.CLIENT_ID,
-  process.env.CLIENT_SECRET,
-  keys.redirect_uris[0]
-);
-
-google.options({ auth: oauth2Client });
-
-export function increment() {
+export const receivedPersonalSheet = (spreadsheetId: string) => {
   return {
-    type: INCREMENT_COUNTER
+    type: RECEIVE_PERSONAL_SHEET,
+    spreadsheetId
   };
-}
+};
 
-export function decrement() {
+export const receivedWorkSheet = (spreadsheetId: string) => {
   return {
-    type: DECREMENT_COUNTER
+    type: RECEIVE_WORK_SHEET,
+    spreadsheetId
   };
-}
-
-export function incrementIfOdd() {
-  return (dispatch: Dispatch, getState: GetState) => {
-    const { counter } = getState();
-
-    if (counter % 2 === 0) {
-      return;
-    }
-
-    dispatch(increment());
-  };
-}
+};
 
 export const getAuth = auth => {
   return {
@@ -68,6 +44,64 @@ export function incrementAsync(delay = 1000) {
     }, delay);
   };
 }
+export function createPersonalSheet() {
+  return async (dispatch: Dispatch, state: GetState) => {
+    const url =
+      'https://sheets.googleapis.com/v4/spreadsheets?fields=properties%2Ftitle%2CspreadsheetId';
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${state().rabbit.auth.access_token}`
+      },
+      body: JSON.stringify({
+        properties: { title: 'Personal White Rabbit Task Tracker' }
+      })
+    })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json);
+        dispatch(receivedPersonalSheet(json.spreadsheetId));
+        return null;
+      })
+      .catch(errorResp => {
+        // eslint-disable-next-line no-console
+        console.error(errorResp);
+        dispatch(
+          receivedError('Something went wrong on our side – please contact us.')
+        );
+      });
+  };
+}
+
+export function createWorkSheet() {
+  return async (dispatch: Dispatch, state: GetState) => {
+    const url =
+      'https://sheets.googleapis.com/v4/spreadsheets?fields=properties%2Ftitle%2CspreadsheetId';
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${state().rabbit.auth.access_token}`
+      },
+      body: JSON.stringify({
+        properties: { title: 'Work White Rabbit Task Tracker' }
+      })
+    })
+      .then(response => response.json())
+      .then(json => {
+        dispatch(receivedWorkSheet(json.spreadsheetId));
+        return null;
+      })
+      .catch(errorResp => {
+        // eslint-disable-next-line no-console
+        console.error(errorResp);
+        dispatch(
+          receivedError('Something went wrong on our side – please contact us.')
+        );
+      });
+  };
+}
 
 export function signInGoogle() {
   const scopes = ['https://www.googleapis.com/auth/spreadsheets'];
@@ -88,5 +122,12 @@ export function signInGoogle() {
       .catch(error => {
         receivedError(error);
       });
+  };
+}
+
+export function setSettings(workId: string, personalId: string) {
+  return async (dispatch: Dispatch) => {
+    dispatch(receivedPersonalSheet(personalId));
+    dispatch(receivedWorkSheet(workId));
   };
 }

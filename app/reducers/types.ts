@@ -9,6 +9,8 @@ export type RabbitState = {
   isError: boolean;
   errorMessage: string;
   auth: object;
+  workGooglesheet: string;
+  personalGooglesheet: string;
 };
 
 export type GetState = () => rabbitStateType;

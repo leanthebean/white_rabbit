@@ -15,7 +15,7 @@ import { BLUE, GREEN, LIGHT_PURPLE, PURPLE } from '../constants/colors';
 
 import rabbit from '../images/rabbit.svg';
 
-import { RabbitState, Dispatch } from '../reducers/types';
+import { RabbitState } from '../reducers/types';
 
 const el = require('electron');
 
@@ -33,20 +33,6 @@ const useStyles = makeStyles({
     height: 50,
     float: 'right'
   },
-
-  paper: {
-    position: 'absolute',
-    top: 70,
-    left: 90,
-    width: 400,
-    height: 500,
-    borderRadius: 10,
-    border: '0.5px solid black',
-    boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.25)',
-    outline: 0,
-    backgroundColor: LIGHT_PURPLE
-  },
-
   button: {
     width: 50,
     height: 50,
@@ -55,7 +41,6 @@ const useStyles = makeStyles({
     borderWidth: 0,
     float: 'right'
   },
-
   paperContainer: {
     display: 'flex'
   }
@@ -64,6 +49,9 @@ const useStyles = makeStyles({
 type Props = {
   state: RabbitState;
   signInGoogle: () => void;
+  createWorkSheet(): () => void;
+  createPersonalSheet(): () => void;
+  setSettings(): (workId: string, personalId: string) => void;
 };
 
 export default function Home(props: Props) {
@@ -72,10 +60,16 @@ export default function Home(props: Props) {
   const [openSettings, setOpenSettings] = React.useState(false);
   const [openMainView, setOpenMainView] = React.useState(false);
 
-  const { state, signInGoogle } = props;
+  const {
+    state,
+    createWorkSheet,
+    createPersonalSheet,
+    signInGoogle,
+    setSettings
+  } = props;
 
   const win = el.remote.getCurrentWindow();
-
+  const handleNewRow = () => {};
   const googleLogin = () => {
     setOpenSettings(true);
     setOpenLogin(false);
@@ -84,6 +78,12 @@ export default function Home(props: Props) {
 
   const handleCloseSettings = () => {
     setOpenSettings(false);
+  };
+
+  const handleOpenSettings = () => {
+    setOpenSettings(true);
+    setOpenLogin(false);
+    setOpenMainView(false);
   };
 
   const handleClose = () => {
@@ -131,12 +131,22 @@ export default function Home(props: Props) {
         </Fade>
         <Fade in={openSettings}>
           <div>
-            <Settings onClickAction={handleCloseSettings} />
+            <Settings
+              statePersonalGooglesheet={state.personalGooglesheet}
+              stateWorkGooglesheet={state.workGooglesheet}
+              onClickAction={handleCloseSettings}
+              onClickCreateWorkSheet={createWorkSheet}
+              onClickCreatePersonalSheet={createPersonalSheet}
+              onClickSetSettings={setSettings}
+            />
           </div>
         </Fade>
         <Fade in={openMainView}>
           <div>
-            <MainView onClickAction={handleCloseSettings} />
+            <MainView
+              onClickShipIt={handleNewRow}
+              onClickSettings={handleOpenSettings}
+            />
           </div>
         </Fade>
       </div>
